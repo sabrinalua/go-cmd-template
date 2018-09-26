@@ -1,0 +1,5 @@
+go_start
+src/github.com
+pkg/*
+bin/*
+release/*

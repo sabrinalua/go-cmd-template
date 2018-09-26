@@ -1,0 +1,12 @@
+package main
+
+import (
+  "fmt"
+)
+func main()  {
+  fmt.Printf("main\n")
+}
+
+func init()  {
+
+}
