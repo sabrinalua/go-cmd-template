@@ -1,0 +1,14 @@
+#!/bin/bash
+
+read -p "Project Path: " projectPath
+
+if [ -d $projectPath ]; then 
+	cat >> go_start << EOF
+#!/bin/sh
+export GOPATH=$projectPath
+export GOROOT=/usr/local/go
+export PATH=\$PATH:\$GOPATH/bin:\$GOROOT/bin
+EOF
+	echo "run source ./go_start"
+fi
+
