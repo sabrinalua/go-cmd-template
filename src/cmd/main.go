@@ -4,7 +4,7 @@ import (
   "fmt"
   "os"
   flag "github.com/ogier/pflag"
-	//"encoding/xml"
+	"encoding/xml"
 	"encoding/json"
 )
 var (
@@ -23,18 +23,36 @@ func main()  {
   }
 }
 
+func json_output(args...interface{}){
+	encoder("json",args)
+}
+
+func xml_output(args...interface{}){
+	encoder("xml",args)
+}
+
+func encoder (format string , args...interface{}){
+	resp:=[]byte{}	
+	var err error
+	switch format{
+		case "xml":
+			resp, err = xml.Marshal(args[0]) 
+		case "json":
+			resp, err = json.Marshal(args[0])
+	}
+	if err==nil{
+		fmt.Printf("format : %s, digest: %s\n\n", format, resp)
+	}else{ fmt.Print(err)}
+}
+
 func init()  {
 	ty:= Try{PartNumber:0, ETag:"000"}
 	ty1:= Try{PartNumber:1, ETag:"001"}
 	cmp:= CompleteMultipartUpload{}
 	cmp.Parts=append(cmp.Parts, ty)
 	cmp.Parts=append(cmp.Parts,ty1)
-	x, err:= json.Marshal(cmp)	
-	if err==nil{
-		fmt.Printf("xml %s\n",x)
-	}else{
-		fmt.Print(err)
-	}
+	json_output(cmp)
+	xml_output(cmp)
 	
 	flag.StringVarP(&input.Name, "name", "n", "", "Enter your name")
 }
