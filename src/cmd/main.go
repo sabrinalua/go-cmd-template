@@ -31,18 +31,23 @@ func xml_output(args...interface{}){
 	encoder("xml",args)
 }
 
-func encoder (format string , args...interface{}){
-	resp:=[]byte{}	
-	var err error
+func encoder (format string , args...interface{})(resp []byte , err error){
 	switch format{
 		case "xml":
 			resp, err = xml.Marshal(args[0]) 
+			resp = []byte (xml.Header+ string(resp))
+			var x CompleteMultipartUpload
+			xml.Unmarshal(resp, &x)
+			fmt.Print("calling json encoder from xml\n")
+			encoder("json", x)
 		case "json":
 			resp, err = json.Marshal(args[0])
 	}
 	if err==nil{
 		fmt.Printf("format : %s, digest: %s\n\n", format, resp)
 	}else{ fmt.Print(err)}
+	
+	return
 }
 
 func init()  {
