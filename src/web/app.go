@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
 )
@@ -18,18 +19,23 @@ func (a *App)Init() {
 }
 
 func (a *App) Run(){
-	r := mux.NewRouter()
-	r.HandleFunc("/", loggingMiddleware(mainRouter))
-	r.HandleFunc("/main", mainRouter)
+	r := mux.NewRouter().SkipClean(true)
+	registerRouter(r)
 
 	logFile, err := os.OpenFile("server.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	  if err != nil {
 	    panic(err)
 	  }
 	// routeLogger:= handlers.LoggingHandler(os.Stdout, r)
-	routeLogger:= handlers.LoggingHandler(logFile, r)
+	routeLogger:= handlers.CombinedLoggingHandler(logFile, r)
 
-	http.ListenAndServe(":1080", routeLogger)
+	srv:= &http.Server{
+		Addr: "0.0.0.0:1080",
+		Handler: routeLogger,
+		WriteTimeout: 15*time.Second,
+		ReadTimeout: 15*time.Second,
+	}
+	srv.ListenAndServe()
 }
 
 func mainRouter(w http.ResponseWriter, r *http.Request) {
