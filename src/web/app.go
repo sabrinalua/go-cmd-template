@@ -20,7 +20,9 @@ func (a *App)Init() {
 
 func (a *App) Run(){
 	r := mux.NewRouter().SkipClean(true)
-	registerRouter(r)
+	r.Methods("GET").Path("/chunky").HandlerFunc(sendChunk)
+
+	// registerRouter(r)
 
 	logFile, err := os.OpenFile("server.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	  if err != nil {
